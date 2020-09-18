@@ -1,0 +1,38 @@
+{
+  "include": [
+    "src"
+  ],
+  "files": [
+    "./src/external-types.d.ts",
+    "./src/test-types.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ESNext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "incremental": true,
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "dist/esm",
+    "declarationDir": "dist/types",
+    "declaration": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

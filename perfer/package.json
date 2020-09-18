@@ -1,0 +1,93 @@
+{
+  "name": "ricos-bundles",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "Alex Greenstein",
+    "email": "alexgr@wix.com"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "http://npm.dev.wixpress.com/",
+    "versionBumpStrategy": "minor"
+  },
+  "scripts": {
+    "build": "yoshi-library build",
+    "start": "yoshi-library start",
+    "test": "yoshi-library test",
+    "lint": "yoshi-library lint",
+    "posttest": "npm run lint",
+    "example": "npm start --prefix example"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts}": "npm run lint"
+  },
+  "dependencies": {
+    "glob": "7.1.6",
+    "ricos-common": "7.19.3",
+    "ricos-editor": "7.19.3",
+    "ricos-theme": "7.19.3",
+    "ricos-viewer": "7.19.3",
+    "wix-rich-content-common": "7.19.3",
+    "wix-rich-content-editor": "7.19.3",
+    "wix-rich-content-editor-common": "7.19.3",
+    "wix-rich-content-plugin-button": "7.19.3",
+    "wix-rich-content-plugin-code-block": "7.19.3",
+    "wix-rich-content-plugin-commons": "7.19.3",
+    "wix-rich-content-plugin-divider": "7.19.3",
+    "wix-rich-content-plugin-emoji": "7.19.3",
+    "wix-rich-content-plugin-file-upload": "7.19.3",
+    "wix-rich-content-plugin-gallery": "7.19.3",
+    "wix-rich-content-plugin-giphy": "7.19.3",
+    "wix-rich-content-plugin-hashtag": "7.19.3",
+    "wix-rich-content-plugin-headers-markdown": "7.19.3",
+    "wix-rich-content-plugin-headings": "7.19.3",
+    "wix-rich-content-plugin-html": "7.19.3",
+    "wix-rich-content-plugin-image": "7.19.3",
+    "wix-rich-content-plugin-indent": "7.19.3",
+    "wix-rich-content-plugin-line-spacing": "7.19.3",
+    "wix-rich-content-plugin-link": "7.19.3",
+    "wix-rich-content-plugin-link-preview": "7.19.3",
+    "wix-rich-content-plugin-map": "7.19.3",
+    "wix-rich-content-plugin-mentions": "7.19.3",
+    "wix-rich-content-plugin-social-polls": "7.19.3",
+    "wix-rich-content-plugin-sound-cloud": "7.19.3",
+    "wix-rich-content-plugin-spoiler": "7.19.3",
+    "wix-rich-content-plugin-text-color": "7.19.3",
+    "wix-rich-content-plugin-undo-redo": "7.19.3",
+    "wix-rich-content-plugin-vertical-embed": "7.19.3",
+    "wix-rich-content-plugin-video": "7.19.3",
+    "wix-rich-content-viewer": "7.19.3"
+  },
+  "devDependencies": {
+    "husky": "^4.2.1",
+    "lint-staged": "^10.0.7",
+    "yoshi-flow-library": "^4.0.0",
+    "jest-yoshi-preset": "^4.48.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "~3.9.0",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^8.0.0"
+  },
+  "jest": {
+    "preset": "jest-yoshi-preset"
+  },
+  "yoshiFlowLibrary": {
+    "bundle": {
+      "library": "ricos-bundles"
+    }
+  },
+  "eslintConfig": {
+    "extends": "yoshi"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [{
+    "name": "Debug Tests",
+    "type": "node",
+    "request": "launch",
+    "program": "${workspaceFolder}/node_modules/yoshi/bin/yoshi-cli",
+    "port": 9229,
+    "args": [
+      "test", "--debug-brk"
+    ]
+  }]
+}
