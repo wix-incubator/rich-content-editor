@@ -55,25 +55,21 @@ function applyActionForGalleryItems(currentItems, newItems) {
     return newItems;
   }
 }
-
-// checks if an accordion pair changed and if so returns the changed pair index and an indictor (title or content)
+function comparePairs(pairA, pairB) {
+  const { key: newKey, title: newTitle, content: newContent } = pairA;
+  const { key: currentKey, title: currentTitle, content: currentContent } = pairB;
+  const keyChanged = currentKey !== newKey;
+  const titleChanged = currentTitle.getCurrentContent() !== newTitle.getCurrentContent();
+  const contentChanged = currentContent.getCurrentContent() !== newContent.getCurrentContent();
+  return (keyChanged && 'key') || (titleChanged && 'title') || (contentChanged && 'content');
+}
+// checks if an accordion pair changed and if so returns the changed pair index and an indicator (title or content)
 function getChangedAccordionPairIndex(currentPairs, newPairs) {
   let item;
   let didChange = false;
   const changedPairIndex = newPairs.findIndex((newPair, index) => {
-    const { key: newKey, title: newTitle, content: newContent } = newPair;
-    const currentPair = currentPairs[index];
-    const { key: currentKey, title: currentTitle, content: currentContent } = currentPair;
-    if (currentKey !== newKey) {
-      return true;
-    }
-    if (currentTitle.getCurrentContent() !== newTitle.getCurrentContent()) {
-      item = 'title';
-      return true;
-    } else if (currentContent.getCurrentContent() !== newContent.getCurrentContent()) {
-      item = 'content';
-      return true;
-    }
+    const item = comparePairs(newPair, currentPairs[index]);
+
     return false;
   });
   if (changedPairIndex > -1) {
@@ -123,19 +119,18 @@ function fixBrokenRicosStates(newEditorState: EditorState, editorState: EditorSt
 }
 
 function handleAccordionEntity(currentData, newData) {
-  const newPairs = newData.pairs.filter(pair => pair.key && pair.title && pair.content);
+  const newPairs = newData.pairs;
   // a pair with no key, title or content is broken
-  const isBrokenContent = newPairs.length !== newData.pairs.length;
+  const isBrokenContent = newPairs.some(pair => !(pair.key && pair.title && pair.content));
   // check if the config changed.
-  if (!isEqual(currentData.config, newData.config) || isBrokenContent) {
+  const isConfigChanged = !isEqual(currentData.config, newData.config);
+  const { pairs: currentPairs } = currentData;
+  const isPairsLengthChanged = newPairs.length !== currentPairs.length;
+
+  if (isConfigChanged || isBrokenContent || isPairsLengthChanged) {
     return {
       shouldUndoAgain: isBrokenContent,
     };
-  }
-  // check if pairs were deleted.
-  const { pairs: currentPairs } = currentData;
-  if (newPairs.length !== currentPairs.length) {
-    return { shouldUndoAgain: false };
   }
 
   // check if a pair changed and fix if necessary.
@@ -300,14 +295,25 @@ function getEntityToReplace(newContentState: RicosContent, contentState: RicosCo
   const newBlocksEntitiesData = createBlockEntitiesDataMap(newContentState);
   const { blocks, entityMap } = contentState;
   let entityToReplace;
-  const didChange = blocks.some(currentBlock => {
-    const { entityRanges = [], key: blockKey } = currentBlock;
-    if (doesBlockExistInNewContentState(currentBlock, entityMap, newBlocksEntitiesData)) {
-      const { block: newBlock, entityData: newData } = newBlocksEntitiesData[blockKey];
-      if (!isEqual(currentBlock, newBlock)) {
-        return true;
-      }
-      if (newData) {
+  let didChange = blocks.some(
+    block => !doesBlockExistInNewContentState(block, entityMap, newBlocksEntitiesData)
+  );
+
+  didChange =
+    didChange ||
+    blocks.some(block => {
+      const { key: blockKey } = block;
+      const { block: newBlock } = newBlocksEntitiesData[blockKey];
+      return !isEqual(block, newBlock);
+    });
+
+  didChange =
+    didChange ||
+    blocks
+      .filter(block => hasEntity(block))
+      .some(currentBlock => {
+        const { entityRanges = [], key: blockKey } = currentBlock;
+        const { entityData: newData } = newBlocksEntitiesData[blockKey];
         const entityKey = entityRanges[0]?.key;
         const currentEntity = entityMap[entityKey];
         const { type, data: currentData } = currentEntity;
@@ -328,11 +334,8 @@ function getEntityToReplace(newContentState: RicosContent, contentState: RicosCo
           }
           return true;
         }
-      }
-      return false;
-    }
-    return true;
-  });
+        return false;
+      });
   return entityToReplace || { shouldUndoAgain: !didChange };
 }
 
