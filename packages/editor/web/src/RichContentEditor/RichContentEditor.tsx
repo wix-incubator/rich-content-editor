@@ -149,7 +149,6 @@ export interface RichContentEditorProps extends PartialDraftEditorProps {
   tablePluginMenu?: boolean;
   callOnChangeOnNewEditorState?: boolean;
   localeResource?: Record<string, string>;
-  maxTextLength?: number;
   /** This is a legacy API, chagnes should be made also in the new Ricos Editor API **/
 }
 
@@ -183,7 +182,7 @@ class RichContentEditor extends Component<RichContentEditorProps, State> {
   customStyleFn: DraftEditorProps['customStyleFn'];
   toolbars;
   innerRCECustomStyleFn;
-  getSelectedText: (editorState: EditorState) => string;
+
   static defaultProps: Partial<RichContentEditorProps> = {
     config: {},
     spellCheck: true,
@@ -242,7 +241,6 @@ class RichContentEditor extends Component<RichContentEditorProps, State> {
     this.copySource = registerCopySource(this.editor);
     preventWixFocusRingAccessibility(this.editorWrapper);
     this.reportDebuggingInfo();
-    this.preloadLibs();
     this.props.helpers?.onOpenEditorSuccess?.(Version.currentVersion);
   }
 
@@ -256,15 +254,6 @@ class RichContentEditor extends Component<RichContentEditorProps, State> {
     this.updateBounds = () => '';
     if (this.copySource) {
       this.copySource.unregister();
-    }
-  }
-
-  // imports dynamic chunks conditionally
-  preloadLibs() {
-    if (this.props.maxTextLength && this.props.maxTextLength > 0) {
-      import(
-        /* webpackChunkName: getSelectedText */ 'wix-rich-content-editor-common/libs/getSelectedText'
-      ).then(({ getSelectedText }) => (this.getSelectedText = getSelectedText));
     }
   }
 
@@ -596,16 +585,14 @@ class RichContentEditor extends Component<RichContentEditorProps, State> {
       }
     }
 
-    const { config, isInnerRCE, maxTextLength } = this.props;
-    const resultEditorState = handlePastedText({
+    const { config, isInnerRCE } = this.props;
+    const resultEditorState = handlePastedText(
       text,
       html,
       editorState,
-      pasteWithoutAtomic: isInnerRCE,
-      customHeadings: this.getHeadings(config),
-      maxTextLength,
-      getSelectedText: this.getSelectedText,
-    });
+      isInnerRCE,
+      this.getHeadings(config)
+    );
     this.updateEditorState(resultEditorState);
 
     return 'handled';
@@ -730,20 +717,6 @@ class RichContentEditor extends Component<RichContentEditorProps, State> {
       // in general, disables any input click on atomic blocks
       handled = 'handled';
     }
-
-    // input is ignored if length > maxTextLength (if maxTextLength is set)
-    if (this.props.maxTextLength && this.props.maxTextLength > 0) {
-      const contentLength = this.state.editorState.getCurrentContent().getPlainText('').length;
-      const selectedTextLength = this.getSelectedText(this.state.editorState).length;
-      if (contentLength - selectedTextLength > this.props.maxTextLength - 1) {
-        // eslint-disable-next-line no-console
-        console.debug(
-          `text editing prevented due to maxTextLength limitation (${this.props.maxTextLength})`
-        );
-        handled = 'handled';
-      }
-    }
-
     return handled || 'not-handled';
   };
 

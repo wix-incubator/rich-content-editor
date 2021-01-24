@@ -73,7 +73,6 @@ export class RicosEngine extends Component<EngineProps> {
       mediaSettings = {},
       linkSettings = {},
       linkPanelSettings = {},
-      maxTextLength,
     } = this.props;
 
     const { strategyProps, previewContent, htmls } = this.runStrategies();
@@ -89,7 +88,6 @@ export class RicosEngine extends Component<EngineProps> {
     const isPreview = () => !!(previewContent && !isPreviewExpanded);
     const ricosPropsToMerge: RichContentProps = {
       isMobile,
-      maxTextLength,
       textToolbarType:
         !isMobile && (textToolbarContainer || useStaticTextToolbar) ? 'static' : 'inline',
       config: {

@@ -46,7 +46,6 @@ export interface RicosEditorProps extends RicosProps {
   toolbarSettings?: ToolbarSettings;
   onBusyChange?: OnBusyChangeFunction;
   injectedContent?: RicosContent;
-  maxTextLength?: number;
   editorEvents?: {
     subscribe: (
       event: string,
